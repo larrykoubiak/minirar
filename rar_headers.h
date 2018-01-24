@@ -53,17 +53,17 @@ typedef enum {
   HEAD3_SERVICE=0x7a,HEAD3_ENDARC=0x7b
 } HEADER_TYPE;
 
-enum HOST_SYSTEM {
+typedef enum {
   HOST_MSDOS=0,HOST_OS2=1,HOST_WIN32=2,HOST_UNIX=3,HOST_MACOS=4,
   HOST_BEOS=5,HOST_MAX
-};
+} HOST_SYSTEM;
 
 typedef struct 
 {
-  unsigned short HeadCRC;  // 'ushort' for RAR 1.5.
-  HEADER_TYPE HeaderType; // 1 byte for RAR 1.5.
-  unsigned short Flags;    // 'ushort' for RAR 1.5.
-  unsigned short HeadSize; // 'ushort' for RAR 1.5, up to 2 MB for RAR 5.0.
+  unsigned short HeadCRC;	// 'ushort' for RAR 1.5.
+  HEADER_TYPE HeaderType;	// 1 byte for RAR 1.5.
+  unsigned short Flags;		// 'ushort' for RAR 1.5.
+  unsigned short HeadSize;	// 'ushort' for RAR 1.5, up to 2 MB for RAR 5.0.
 } BaseBlock;
 
 typedef struct
@@ -87,22 +87,22 @@ typedef struct
 	BaseBlock base;
 	unsigned int DataSize;
 	unsigned int LowUnpSize;
-	char HostOS;
+	HOST_SYSTEM HostOS;
 	unsigned int FileCRC;
 	unsigned int FileTime;
 	char UnpVer;
 	char Method;
 	unsigned int FileAttr;
-	char FileName[2048];
+	char *FileName;
 	bool SplitBefore;	//B
 	bool SplitAfter;	//A
-	bool Password;     	//P
-	bool Comment;      	//C
-	bool Solid;        	//S
-	bool Large;        	//L
-	bool Unicode;      	//U
-	bool Salt;         	//T
-	bool Version;      	//V
+	bool Password;		//P
+	bool Comment;		//C
+	bool Solid;			//S
+	bool Large;			//L
+	bool Unicode;		//U
+	bool Salt;			//T
+	bool Version;		//V
 	bool Dir;			//D
 	
 } FileHeader;
@@ -120,5 +120,4 @@ BaseBlock ReadBaseBlock(FILE *fp);
 void ReadSignature(Archive *arc,FILE *fp);
 void ReadMainHeader(Archive *arc,FILE *fp);
 void ReadFileHeader(Archive *arc,FILE *fp);
-void print_archive(Archive *arc);
 #endif
