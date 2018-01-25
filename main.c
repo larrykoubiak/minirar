@@ -51,7 +51,7 @@ void free_archive(Archive *arc)
 	{
 		if(arc->fileheaders)
 		{
-			for(i=0;i<arc->nbFiles;arc++)
+			for(i=0;i<arc->nbFiles;i++)
 			{
 				if(arc->fileheaders[i].FileName)
 					free(arc->fileheaders[i].FileName);
