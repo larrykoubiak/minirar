@@ -46,6 +46,7 @@ SOURCES_CXX :=
 
 SOURCES_C    := stringtable.c \
 				rar_headers.c \
+				rar_time.c \
 				main.c
 
 OBJECTS := $(SOURCES_CXX:.cpp=.o) $(SOURCES_C:.c=.o)
@@ -71,7 +72,10 @@ install:
 test:
 	./minirar "test/Final Fantasy 6 [ff6].rsn"
 
+test2:
+	./minirar "test/ff7_psf.rar"
+
 debug:
 	gdb --args minirar "test/Final Fantasy 6 [ff6].rsn"
 	
-.PHONY: clean install test debug
+.PHONY: clean install test test2 debug

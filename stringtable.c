@@ -113,10 +113,11 @@ char *GetHostSystemName(HOST_SYSTEM hs)
 }
 void print_archive(Archive *arc)
 {
-	printf("______________________________________________________________________________________\n");
-	printf("Archive: %s Format %s (%x)\n",arc->filename,GetFormatName(arc->format),arc->format);
-	printf("______________________________________________________________________________________\n");
-	printf("Header:  CRC 0x%04X Type %s (0x%02X) Flags %c%c%c%c%c%c%c%c%c (0x%04X) Length 0x%04X\n",
+	int i;
+	printf("_____________\n");
+	printf("Archive: %s\nFormat %s (%x)\n",arc->filename,GetFormatName(arc->format),arc->format);
+	printf("_____________\n");
+	printf("Header:\n CRC 0x%04X\n Type %s (0x%02X)\n Flags %c%c%c%c%c%c%c%c%c (0x%04X)\n Length 0x%04X\n",
 		arc->mainheader.base.HeadCRC,
 		GetHeaderTypeName(arc->mainheader.base.HeaderType),
 		arc->mainheader.base.HeaderType,
@@ -131,34 +132,38 @@ void print_archive(Archive *arc)
 		arc->mainheader.Volume ? 'V' : '-',
 		arc->mainheader.base.Flags,
 		arc->mainheader.base.HeadSize);
-	printf("______________________________________________________________________________________\n");
-	printf("File:    CRC 0x%04X Type %s (0x%02X) Flags %c%c%c%c%c%c%c%c%c%c (0x%04X) Length 0x%04X\n",
-		arc->fileheader.base.HeadCRC,
-		GetHeaderTypeName(arc->fileheader.base.HeaderType),
-		arc->fileheader.base.HeaderType,
-		arc->fileheader.SplitBefore ? 'B' : '-',
-		arc->fileheader.SplitAfter ? 'A' : '-',
-		arc->fileheader.Password ? 'P' : '-',
-		arc->fileheader.Comment ? 'C' : '-',
-		arc->fileheader.Solid ? 'S' : '-',
-		arc->fileheader.Large ? 'L' : '-',
-		arc->fileheader.Unicode ? 'U' : '-',
-		arc->fileheader.Salt ? 'T' : '-',
-		arc->fileheader.Version ? 'V' : '-',
-		arc->fileheader.Dir ? 'D' : '-',
-		arc->fileheader.base.Flags,
-		arc->fileheader.base.HeadSize);
-	printf("         Packed %i Unpacked %i Host %s (0x%02X) CRC 0x%08X Time 0x%08X\nVer 0x%02X Method 0x%02X FileAttr 0x%08X Filename \"%s\"\n",
-		arc->fileheader.DataSize,
-		arc->fileheader.LowUnpSize,
-		GetHostSystemName(arc->fileheader.HostOS),
-		arc->fileheader.HostOS,
-		arc->fileheader.FileCRC,
-		arc->fileheader.FileTime,
-		arc->fileheader.UnpVer,
-		arc->fileheader.Method,
-		arc->fileheader.FileAttr,
-		arc->fileheader.FileName);
-	printf("______________________________________________________________________________________\n");
+	for(i=0;i<arc->nbFiles;i++)
+	{
+		printf("_____________\n");
+		printf("File %i:\n CRC 0x%04X\n Type %s (0x%02X)\n Flags %c%c%c%c%c%c%c%c%c%c (0x%04X)\n Length 0x%04X\n",i,
+			arc->fileheaders[i].base.HeadCRC,
+			GetHeaderTypeName(arc->fileheaders[i].base.HeaderType),
+			arc->fileheaders[i].base.HeaderType,
+			arc->fileheaders[i].SplitBefore ? 'B' : '-',
+			arc->fileheaders[i].SplitAfter ? 'A' : '-',
+			arc->fileheaders[i].Password ? 'P' : '-',
+			arc->fileheaders[i].Comment ? 'C' : '-',
+			arc->fileheaders[i].Solid ? 'S' : '-',
+			arc->fileheaders[i].Large ? 'L' : '-',
+			arc->fileheaders[i].Unicode ? 'U' : '-',
+			arc->fileheaders[i].Salt ? 'T' : '-',
+			arc->fileheaders[i].Version ? 'V' : '-',
+			arc->fileheaders[i].Dir ? 'D' : '-',
+			arc->fileheaders[i].base.Flags,
+			arc->fileheaders[i].base.HeadSize);
+		printf(" Packed %i\n Unpacked %i\n Host %s (0x%02X)\n CRC 0x%08X\n Time 0x%08X\n Ver 0x%02X\n Method 0x%02X\n FileAttr 0x%08X\n WinSize 0x%08X\n Filename \"%s\"\n",
+			arc->fileheaders[i].DataSize,
+			arc->fileheaders[i].LowUnpSize,
+			GetHostSystemName(arc->fileheaders[i].HostOS),
+			arc->fileheaders[i].HostOS,
+			arc->fileheaders[i].FileCRC,
+			arc->fileheaders[i].FileTime,
+			arc->fileheaders[i].UnpVer,
+			arc->fileheaders[i].Method,
+			arc->fileheaders[i].FileAttr,
+			arc->fileheaders[i].WinSize,
+			arc->fileheaders[i].FileName);
+		printf("_____________\n");
+	}
 
 }

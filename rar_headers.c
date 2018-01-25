@@ -1,8 +1,8 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-
 #include "rar_headers.h"
+#include "rar_time.h"
 #include "stringtable.h"
 
 void ReadSignature(Archive *arc,FILE *fp)
@@ -42,19 +42,17 @@ BaseBlock ReadBaseBlock(FILE *fp)
 	return new_block;
 }
 
-void ReadMainHeader(Archive *arc,FILE *fp)
+void ReadMainHeader(Archive *arc,FILE *fp, BaseBlock bb)
 {
-	BaseBlock bb;
 	unsigned short highav;
 	unsigned int av;
 	bool v,c,l,s,n,a,p,w,f;
-	bb = ReadBaseBlock(fp);
 	v = ((bb.Flags & MHD_VOLUME			) !=0);
 	c = ((bb.Flags & MHD_COMMENT		) !=0);
 	l = ((bb.Flags & MHD_LOCK			) !=0);
 	s = ((bb.Flags & MHD_SOLID			) !=0);
 	n = ((bb.Flags & MHD_NEWNUMBERING	) !=0);
-	a = ((bb.Flags & MHD_AV          	) !=0);
+	a = ((bb.Flags & MHD_AV				) !=0);
 	p = ((bb.Flags & MHD_PROTECT		) !=0);
 	w = ((bb.Flags & MHD_PASSWORD		) !=0);
 	f = ((bb.Flags & MHD_FIRSTVOLUME	) !=0);
@@ -63,17 +61,16 @@ void ReadMainHeader(Archive *arc,FILE *fp)
 	arc->mainheader = (MainHeader){bb,highav,av,v,c,l,s,n,a,p,w,f};
 }
 
-void ReadFileHeader(Archive *arc,FILE *fp)
+void ReadFileHeader(Archive *arc,FILE *fp, BaseBlock bb, int id)
 {
-	BaseBlock bb;
-	unsigned char uv,m;
-	char fn[2048];
+	FileHeader fh;
+	unsigned char uv,m,hs;
+	char *fn;
 	unsigned short ns;
 	unsigned int ds,lus,fc,ft,fa;
-	HOST_SYSTEM hs;
-	bool b,a,p,c,s,l,u,t,v,d;
-	bb = ReadBaseBlock(fp);
-	arc->fileheader.base = bb;
+	bool b,a,p,c,s,l,u,t,v,d,e;
+	char *fd;
+	size_t ws;
 	b = ((bb.Flags & LHD_SPLIT_BEFORE	) != 0);
 	a = ((bb.Flags & LHD_SPLIT_AFTER	) != 0);
 	p = ((bb.Flags & LHD_PASSWORD		) != 0);
@@ -84,6 +81,8 @@ void ReadFileHeader(Archive *arc,FILE *fp)
 	t = ((bb.Flags & LHD_SALT 			) != 0);
 	v = ((bb.Flags & LHD_VERSION		) != 0);
 	d = ((bb.Flags & LHD_WINDOWMASK		) == LHD_DIRECTORY);
+	e = ((bb.Flags & LHD_EXTTIME		) != 0);
+	ws = d ? 0 : 0x10000 << ((bb.Flags & LHD_WINDOWMASK) >> 5);
 	fread(&ds,4,1,fp);
 	fread(&lus,4,1,fp);
 	fread(&hs,1,1,fp);
@@ -93,7 +92,12 @@ void ReadFileHeader(Archive *arc,FILE *fp)
 	fread(&m,1,1,fp);
 	fread(&ns,2,1,fp);
 	fread(&fa,4,1,fp);
-	fread(&fn,ns,1,fp);
-	fn[ns] = 0;
-	arc->fileheader = (FileHeader){bb,ds,lus,hs,fc,ft,uv,m,fa,fn,b,a,p,c,s,l,u,t,v,d};
+	fn = calloc(sizeof(char),ns+1);
+	fread(fn,ns,1,fp);
+	if(e)
+		ReadExtTime(fp);
+	fd = malloc(sizeof(char) * ds);
+	fread(fd,1,ds,fp);
+	fh = (FileHeader){bb,ds,lus,hs,fc,ft,uv,m,fa,ws,fn,fd,b,a,p,c,s,l,u,t,v,d};
+	arc->fileheaders[id] = fh;
 }
