@@ -2,7 +2,6 @@
 #include <stdlib.h>
 #include <string.h>
 #include "rar_headers.h"
-#include "rar_time.h"
 #include "stringtable.h"
 
 void ReadSignature(Archive *arc,FILE *fp)
@@ -71,6 +70,7 @@ void ReadFileHeader(Archive *arc,FILE *fp, BaseBlock bb, int id)
 	bool b,a,p,c,s,l,u,t,v,d,e;
 	char *fd;
 	size_t ws;
+	RarLocalTime *times;
 	b = ((bb.Flags & LHD_SPLIT_BEFORE	) != 0);
 	a = ((bb.Flags & LHD_SPLIT_AFTER	) != 0);
 	p = ((bb.Flags & LHD_PASSWORD		) != 0);
@@ -94,10 +94,10 @@ void ReadFileHeader(Archive *arc,FILE *fp, BaseBlock bb, int id)
 	fread(&fa,4,1,fp);
 	fn = calloc(sizeof(char),ns+1);
 	fread(fn,ns,1,fp);
-	if(e)
-		ReadExtTime(fp);
+	times = ReadExtTime(fp,ft,e);
 	fd = malloc(sizeof(char) * ds);
 	fread(fd,1,ds,fp);
-	fh = (FileHeader){bb,ds,lus,hs,fc,ft,uv,m,fa,ws,fn,fd,b,a,p,c,s,l,u,t,v,d};
+	fh = (FileHeader){bb,ds,lus,hs,fc,ft,uv,m,fa,ws,fn,fd,b,a,p,c,s,l,u,t,v,d,e,times[0]};
 	arc->fileheaders[id] = fh;
+	free(times);
 }

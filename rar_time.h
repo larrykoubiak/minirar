@@ -5,6 +5,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <time.h>
+#include <stdbool.h>
 
 typedef struct
 {
@@ -19,5 +20,7 @@ typedef struct
   unsigned int yDay;
 }  RarLocalTime;
 
-void ReadExtTime(FILE *fp);
+RarLocalTime *ReadExtTime(FILE *fp,unsigned int filetime,bool exttime);
+RarLocalTime Dos2RLT(unsigned int dt);
+struct tm *RLT2Tm(RarLocalTime rlt);
 #endif

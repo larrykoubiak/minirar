@@ -39,6 +39,7 @@
 #include <stdio.h>
 #include <stdbool.h>
 #include <stdint.h>
+#include "rar_time.h"
 
 typedef enum {
 	RARFMT_NONE,RARFMT14,RARFMT15,RARFMT50,RARFMT_FUTURE
@@ -108,7 +109,7 @@ typedef struct
 	bool Version;		//V
 	bool Dir;			//D
 	bool ExtTime;		//E
-	
+	RarLocalTime ModifiedTime;
 } FileHeader;
 
 typedef struct

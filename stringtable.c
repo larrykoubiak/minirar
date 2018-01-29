@@ -134,6 +134,10 @@ void print_archive(Archive *arc)
 		arc->mainheader.base.HeadSize);
 	for(i=0;i<arc->nbFiles;i++)
 	{
+		struct tm *ModifiedTime;
+		char timestr[20];
+		ModifiedTime = RLT2Tm(arc->fileheaders[i].ModifiedTime);
+		strftime(timestr,20,"%d/%m/%Y %H:%M:%S",ModifiedTime);
 		printf("_____________\n");
 		printf("File %i:\n CRC 0x%04X\n Type %s (0x%02X)\n Flags %c%c%c%c%c%c%c%c%c%c (0x%04X)\n Length 0x%04X\n",i,
 			arc->fileheaders[i].base.HeadCRC,
@@ -151,12 +155,13 @@ void print_archive(Archive *arc)
 			arc->fileheaders[i].Dir ? 'D' : '-',
 			arc->fileheaders[i].base.Flags,
 			arc->fileheaders[i].base.HeadSize);
-		printf(" Packed %i\n Unpacked %i\n Host %s (0x%02X)\n CRC 0x%08X\n Time 0x%08X\n Ver 0x%02X\n Method 0x%02X\n FileAttr 0x%08X\n WinSize 0x%08X\n Filename \"%s\"\n",
+		printf(" Packed %i\n Unpacked %i\n Host %s (0x%02X)\n CRC 0x%08X\n Time %s (0x%08X)\n Ver 0x%02X\n Method 0x%02X\n FileAttr 0x%08X\n WinSize 0x%08X\n Filename \"%s\"\n",
 			arc->fileheaders[i].DataSize,
 			arc->fileheaders[i].LowUnpSize,
 			GetHostSystemName(arc->fileheaders[i].HostOS),
 			arc->fileheaders[i].HostOS,
 			arc->fileheaders[i].FileCRC,
+			timestr,
 			arc->fileheaders[i].FileTime,
 			arc->fileheaders[i].UnpVer,
 			arc->fileheaders[i].Method,
