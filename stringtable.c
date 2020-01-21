@@ -166,7 +166,7 @@ void print_archive(Archive *arc)
 			arc->fileheaders[i].UnpVer,
 			arc->fileheaders[i].Method,
 			arc->fileheaders[i].FileAttr,
-			arc->fileheaders[i].WinSize,
+			(unsigned int)arc->fileheaders[i].WinSize,
 			arc->fileheaders[i].FileName);
 		printf("_____________\n");
 	}

@@ -76,6 +76,6 @@ test2:
 	./minirar "test/ff7_psf.rar"
 
 debug:
-	gdb --args minirar "test/Final Fantasy 6 [ff6].rsn"
+	gdb --args minirar "test/ff7_psf.rar"
 	
 .PHONY: clean install test test2 debug

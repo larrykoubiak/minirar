@@ -13,11 +13,11 @@ RarLocalTime *ReadExtTime(FILE *fp,unsigned int filetime,bool exttime)
 	unsigned int dostime;
 	int i,j;
 	char count,cb;
-	fread(&Flags,2,1,fp);
 	tbl=malloc(sizeof(RarLocalTime)*4);
 	tbl[0] = Dos2RLT(filetime);
 	if(exttime)
 	{
+		fread(&Flags,2,1,fp);
 		for(i=0;i<4;i++)
 		{
 			tbl[i].Reminder = 0;
